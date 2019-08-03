@@ -1,4 +1,4 @@
-#include "head"
+#include "head.h"
 
 DiskOperate::setDbFile(){
 	char filename[64];
@@ -11,6 +11,7 @@ DiskOperate::setDbFile(){
 			while(fileIn){
 				fileIn.get(ch);
 				if(ch=='>'){
+					fileIn.get(ch);
 					while(ch!=';'){
 						cout<<ch;
 						fileIn.get(ch);
@@ -26,7 +27,7 @@ DiskOperate::setDbFile(){
 			gets(filename);
 			fileOut<<"DB File>"<<filename<<";";
 			fileOut.close();
-			cout<<"Database Created : "<<filename<<endl;
+			cout<<"Database set to : "<<filename<<endl;
 		}
 		return 0;
 	}
@@ -41,6 +42,7 @@ DiskOperate::changeDbFile(){
 		while(fileIn){
 			fileIn.get(ch);
 			if(ch=='>'){
+				fileIn.get(ch);
 				while(ch!=';'){
 					cout<<ch;
 					fileIn.get(ch);
