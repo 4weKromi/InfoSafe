@@ -1,12 +1,12 @@
 #include "head.h"
 
-class ProgramLoop: public DiskOperate, public Interface, public Authenticate{
+class ProgramLoop: public ChooseSet, public Interface{
 	public:
 	ProgramLoop(){
-		setDbFile();
+		verify();
+		setFile();
 	}
 	int flow(){
-		verify();
 			while(true){
 				int pick=options();
 				if(pick==1){
@@ -28,7 +28,7 @@ class ProgramLoop: public DiskOperate, public Interface, public Authenticate{
 					changePass();
 				}
 				else if(pick==7){
-					changeDbFile();
+					setFile();
 				}
 				else if(pick==8){
 					cout<<" Bye "<<endl;
@@ -43,6 +43,5 @@ int main(int argc, char **argv){
 	cout<<" ";
 	ProgramLoop pl;
 	pl.flow();
-	cout<<"..done";
 	return 0;
 }

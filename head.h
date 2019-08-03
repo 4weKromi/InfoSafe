@@ -2,20 +2,25 @@
 #include <fstream>
 #include <iostream>
 
-class DiskOperate{
-	public:
-	DiskOperate(){};
-	int setDbFile();
-	int changeDbFile();
-};
 class Interface{
 	public:
 	Interface(){};
 	int options();
 };
-class Authenticate{
+class ChooseSet{
+	char passValue[64];
+	char dbName[64];
+	char setValue[64];
+	char setName[64];
+	char shash[64];
+	char filename[64];
+	char ch;
+	unsigned int cSetV=0;
+	unsigned int cSetN=0;
+	unsigned int i;
 	public:
-	Authenticate(){};
+	ChooseSet(){};
+	int setFile();
 	int verify();
 	int changePass();
 };

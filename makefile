@@ -3,8 +3,8 @@ appName = InfoSafe.exe
 CC = g++
 ver = c++11
 heads = head.h
-objects = diskOperate.o interface.o authenticate.o md5.o main.o
-srcs = diskOperate.cpp interface.cpp main.cpp hash/md5.cpp authenticate.cpp
+objects = chooseSet.o interface.o md5.o main.o
+srcs = chooseSet.cpp interface.cpp main.cpp hash/md5.cpp
 
 build:
 	$(CC) -Wall -c $(srcs) -std=$(ver)
