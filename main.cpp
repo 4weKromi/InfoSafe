@@ -1,22 +1,24 @@
 #include "head.h"
 
-class ProgramLoop: public ChooseSet, public Interface{
+class ProgramLoop: public Interface, public FileOperate{
 	public:
 	ProgramLoop(){
 		verify();
-		setFile();
 	}
 	int flow(){
 			while(true){
 				int pick=options();
 				if(pick==1){
-					cout<<" 1 selected"<<endl;
+					createDb();
 				}
 				else if(pick==2){
-					cout<<" 2 selected"<<endl;
+					char str[]="Hello";
+					char str2[]="Awe";
+					enText(str,str2);
+					deText();
 				}
 				else if(pick==3){
-					cout<<" 3 selected"<<endl;
+					currentDb();
 				}
 				else if(pick==4){
 					cout<<" 4 selected"<<endl;
@@ -28,7 +30,7 @@ class ProgramLoop: public ChooseSet, public Interface{
 					changePass();
 				}
 				else if(pick==7){
-					setFile();
+					changeDb();
 				}
 				else if(pick==8){
 					cout<<" Bye "<<endl;

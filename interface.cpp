@@ -3,7 +3,7 @@
 
 Interface::options(){
 	int opt;
-	cout<<"\n\n 1 Open  \t_Index\n\n 2 Search\t_Strings\n\n 3 Add   \t_EOF";
+	cout<<"\n\n 1 Create  \t_Database\n\n 2 Search\t_Strings\n\n 3 Check Current DB";
 	cout<<"\n\n 4 Add   \t_Location \n\n 5 Delete\t_Strings\n\n 6 Change Pass\n\n 7 Set DB\n\n 8 Quit";
 	cout<<"\n\n Select : ";
 	cin>>opt;
