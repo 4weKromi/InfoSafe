@@ -9,32 +9,38 @@ class ProgramLoop: public Interface, public FileOperate{
 			while(true){
 				int pick=options();
 				if(pick==1){
-					createDb();
+					if(flagWrite==1)
+					enText(buffEntity,buffDesc);
+					writeFile();
 				}
 				else if(pick==2){
-					char str[]="Hello";
-					char str2[]="Awe";
-					enText(str,str2);
-					deText();
+					cout<<" 2 Selected";
 				}
 				else if(pick==3){
-					currentDb();
+					loadFile(1);/* Decrypts Using Index*/		
 				}
 				else if(pick==4){
-					cout<<" 4 selected"<<endl;
+					loadFile(0);/* Decrypts all*/
 				}
 				else if(pick==5){
-					cout<<" 5 selected"<<endl;
+					currentDb();/* Current DB Details*/
 				}
 				else if(pick==6){
-					changePass();
+					createDb();/* Creates new DB file*/
 				}
 				else if(pick==7){
-					changeDb();
+					changeDb();/* Changes Current DB */
 				}
 				else if(pick==8){
-					cout<<" Bye "<<endl;
+					changePass();/* Changes Key */
+				}
+				else if(pick==9){
+					reset();
 					break;
+				}
+				else if(pick==0){
+					cout<<" Bye "<<endl;
+					break;/* Breaks Loop - Quits */
 				}
 			}
 		return 0;

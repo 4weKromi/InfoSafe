@@ -1,43 +1,53 @@
 #include <ios>
 #include <fstream>
 #include <iostream>
-
+using namespace std;
 class Interface{
-	public:
+	char choice;
+protected:
+	unsigned int flagWrite;
+	char buffEntity[32],buffDesc[480];
+public:
 	Interface(){};
 	int options();
 };
+
 class ChooseSet{
-	char setValue[64];
-	char setName[64];
-	char shash[64];
-	char dbName[64];
+	char setValue[64],setName[64];
 	char ch;
-	unsigned int flagPass,flagDb;
 	unsigned int cSetV=0;
 	unsigned int cSetN=0;
 	unsigned int i;
-	protected:
-	char passValue[64];
-	char filename[64];
-	public:
+protected:
+	char shash[64],filename[64];
+	unsigned int flagPass,flagDb;
+	char dbName[64],passValue[64];
+	char buffer[512],infoTemp[448];
+	unsigned int stage,lenFi;
+public:
 	ChooseSet(){};
+	int setEncrypt(char setEn[]);
+	int setDecrypt(char setDe[]);
 	int checkFile();
-	int currentDb();
 	int verify();
 	int changePass();
 	int changeDb();
+	int createDb();
+	int reset();
 };
+
 class FileOperate: public ChooseSet{
 	unsigned int lenW,lenD;
-	char encryptWord[32];
-	char encryptDesc[480];
+	unsigned int dbSize=0;
+	char bufferEntity[32],bufferDesc[480];
 	char ch;
-	public:
+public:
 	FileOperate(){};
-	int createDb();
-	int loadFile();
-	int enText(char word[],char desc[]);
-	int deText();
+	int currentDb();
+	int fileSize();
+	int loadFile(int arg);
+	int writeFile();
+	int enText(char entity[],char desc[]);
+	int deText(char entity[],char desc[]);
 };
-using namespace std;
+

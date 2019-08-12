@@ -1,15 +1,50 @@
 
 #include "head.h"
 #include "hash/md5.h"
-#include <cstdio>
+#include <limits> 
+#include <cstdio> //strcmp
+#define SET "setApp.conf"
 
+struct data{
+char dbKey[64];
+char exInfo[448];
+}head;
+
+ChooseSet::setEncrypt(char setEn[]){
+	unsigned int i;
+	lenFi=strlen(setEn);
+	for(i=0;i<lenFi;i++){
+		ch=setEn[i]+98;
+		buffer[i]=ch;
+	}
+	buffer[i]='\0';
+	return 0;
+}
+ChooseSet::setDecrypt(char setDe[]){
+	unsigned int i;
+	lenFi=strlen(setDe);
+	for(i=0;i<lenFi;i++){
+		ch=setDe[i]-98;
+		buffer[i]=ch;
+	}
+	buffer[i]='\0';
+	return 0;
+}
+ChooseSet::reset(){
+	ofstream fileOut;
+	fileOut.open(SET);
+	fileOut<<"<key>"<<";\n";
+	fileOut<<"<sel_file>"<<";\n";
+	fileOut.close();
+	return 0;
+}
 ChooseSet::checkFile(){
-	ifstream fileIn;
+	ifstream fileIn,fileInD;
 	ofstream fileOut;
 	unsigned int count=0;
 	flagPass=0;
 	flagDb=0;
-	fileIn.open("setApp.conf");
+	fileIn.open(SET);
 	if(fileIn){
 		while(fileIn){
 			fileIn.get(ch);
@@ -40,73 +75,53 @@ ChooseSet::checkFile(){
 						dbName[i] = setValue[i]; 
 					dbName[i]='\0';
 					flagDb = 1;	//db assigned
+					setDecrypt(dbName);
+					fileInD.open(buffer);
+					if(fileInD)
+						flagDb=2;//db file found
+					else
+						flagDb=3;//db not found
+					fileInD.close();
 				}else if(count==2&&cSetV<=0){
 					flagDb = 0; //db not set
 				}
 			}
 		}
 		fileIn.close();
-	}else{
-		/*Create a new config file, nothing assigned*/
-		fileOut.open("setApp.conf");
+	}else{	/*Create a new config file, nothing assigned*/
+		fileOut.open(SET);
 		fileOut<<"<key>"<<";\n";
 		fileOut<<"<sel_file>"<<";\n";
 		fileOut.close();
-		cout<<" Creating a new setApp.conf file \n";
+		cout<<"\n Creating a new setApp.conf file ";
 	}
-	return 0;
-}
-
-ChooseSet::changeDb(){
-	ifstream fileIn;
-	ofstream fileOut;
-	checkFile();
-	/*create a new config file, if pass not assigned, pass is reset*/
-	if(flagPass==1){	
-		fileOut.open("setApp.conf");
-		fileOut<<"<key>"<<passValue<<";\n";
-	}else{
-		fileOut.open("setApp.conf");
-		fileOut<<"<key>"<<";\n";	
-	}
-	cout<<"\n Enter new Database name (Syntax: filename.ext) : ";
-	cin>>filename;
-	fileIn.open(filename); /*check db file*/
-	if(fileIn){
-		fileOut<<"<sel_file>"<<filename<<";\n"; /*db assigned to config file*/
-		cout<<" Database set to "<<filename<<endl;
-	}else{
-		cout<<"\n Database file not found";
-		fileOut<<"<sel_file>"<<";\n"; //DB is reset
-	}
-	fileOut.close();
-	fileIn.close();
-	return 0;
-}
-ChooseSet::currentDb(){
-	checkFile();
-	if(flagDb==1)
-		cout<<"\n Current DB : "<<dbName<<endl;
-	else
-		cout<<"\n Db not set";
 	return 0;
 }
 	
 ChooseSet::changePass(){
 	ofstream fileOut;
+	string str;
 	checkFile();
 	/*Remove current config file*/
-	if (remove("setApp.conf")==0){
-			fileOut.open("setApp.conf");
+	if (remove(SET)==0){
+			fileOut.open(SET);
 			cout<<" Enter new pass : ";
 			cin>>shash;
-			fileOut<<"<key>"<<md5(shash)<<";\n";
-			cout<<" Pass Changed : "<<shash<<endl;
+			str=md5(shash);
+			int n = str.length();
+			/*To compare string with array */
+			char arr[n+1];
+			for (i = 0; i < sizeof(arr); i++) { 
+				arr[i] = str[i]; 
+			}
+			setEncrypt(arr);
+			fileOut<<"<key>"<<buffer<<";\n";
+			cout<<"\n Pass Hash : "<<str<<endl;
 	}else{
 		cout<<" Failed to change pass";
 	}
 	/* if db not assigned, db is reset*/
-	if(flagDb==1){
+	if(flagDb>=1){
 		fileOut<<"<sel_file>"<<dbName<<";\n";
 	}else{
 		fileOut<<"<sel_file>"<<";\n";		
@@ -118,39 +133,136 @@ ChooseSet::changePass(){
 ChooseSet::verify(){
 	char pcompare[64];
 	ofstream fileOut;
+	string str;
 	checkFile();
 	/*if pass assigned*/
 	if(flagPass==1){
 		while(true){
 			cout<<"\n Enter pass : ";
+			/* issue#1  remove echo */
 			cin>>pcompare;
-			string str=md5(pcompare);
-			int n = str.length(); 
+			str=md5(pcompare);
+			int n = str.length();
+			/*To compare string with array */
 			char arr[n+1];
 			for (i = 0; i < sizeof(arr); i++) { 
 				arr[i] = str[i]; 
 			}
+			setEncrypt(arr);
+			strcpy(arr,buffer);
 			if(strcmp(passValue,arr)==0){
 				cout<<" Okay !!";
 				return 0;
 			}else
-				cout<<" Try Again ! ";
+				cout<<"\n Try Again ! ";
 		}
-	}else{
-		/*if pass not set, or removed manually*/
-		if (remove("setApp.conf")==0){
-			fileOut.open("setApp.conf");
-			cout<<" Enter new pass : ";
+	}else{	/*if pass not set, or removed manually*/
+		if (remove(SET)==0){
+			fileOut.open(SET);
+			cout<<"\n Enter new pass : ";
 			cin>>shash;
-			fileOut<<"<key>"<<md5(shash)<<";\n";
+			str=md5(shash);
+			int n = str.length();
+			char tmp[n+1];
+			for(i=0;i<sizeof(tmp);i++){
+				tmp[i] = str[i];
+			}
+			setEncrypt(tmp);
+			fileOut<<"<key>"<<buffer<<";\n";
 			/*pass not found, DB is reset*/
 			fileOut<<"<sel_file>"<<";\n";
 			fileOut.close();
-			cout<<" Pass Changed : "<<shash<<endl;
+			cout<<" Pass hash : "<<str<<endl;
 		}else{
 			cout<<" Failed to change pass";
 		}	
 	}
+	return 0;
+}
+
+ChooseSet::changeDb(){
+	ifstream fileIn;
+	ofstream fileOut;
+	string str;
+	stage=0;
+	cout<<"\n Enter new Database name (Syntax: filename.ext )[<64] : ";
+	cin>>filename;
+	fileIn.open(filename);
+	if(fileIn){
+		fileIn.seekg(0,fileIn.beg);
+		fileIn.read((char *)&head,sizeof(head));
+		setDecrypt(head.dbKey);/* Decrypt to buffer*/
+		cout<<"\n Enter DB Key : ";
+		cin>>shash;
+		str=md5(shash);
+		int n = str.length();
+		char tmp[n+1];
+		for(i=0;i<sizeof(tmp);i++){
+			tmp[i] = str[i];
+		}
+		/* Decrypted buffer compares user input hash */
+		cout<<"\n Key Hash : "<<buffer;
+		if(strcmp(buffer,tmp)==0) 
+			stage++;
+		if(stage>=1){
+			cout<<"\n Db Data Access Granted ";
+			fileOut.open(SET);
+			fileOut<<"<key>"<<passValue<<";\n";/* App Key*/
+			setEncrypt(filename);
+			fileOut<<"<sel_file>"<<buffer<<";\n";/* Selected DB*/
+		}
+		else{
+			cout<<"\n Db Data Access Denied ";
+			cout<<"\n Entered Hash : "<<tmp;
+		}
+	}
+	else
+		cout<<"\n "<<filename<<" does not exist";
+	return 0;
+}
+
+ChooseSet::createDb(){
+	checkFile();
+	string str;
+	ofstream fileOut;
+	ifstream fileIn;
+	cout<<"\n Enter new Database name (Syntax: filename.ext )[<64] : ";
+	cin>>filename;
+	fileIn.open(filename);
+	if(fileIn){
+		cout<<"\n Failed ! Database File Exist ";
+		cout<<"\n Replace Existing File ? Y/N : ";
+		cin>>ch;
+		if(ch=='N'||ch=='n'){
+			cout<<"\n Using Existing file ";
+			changeDb();
+			return 0;
+		}
+	}
+	fileOut.open(filename);
+	cout<<"\n New Database file created : "<<filename;
+	cout<<"\n Enter "<<filename<<" info [<448] for readablity add '_' after each word\n : ";
+	i=0;
+	cin.ignore(1);
+	while(cin.peek()!='\n'){
+		cin>>infoTemp[i++];
+	}
+	cout<<"\n Enter new pass [<64]: ";
+	cin>>shash;
+	str=md5(shash);
+	int n = str.length();
+	char tmp[n+1];
+	for(i=0;i<sizeof(tmp);i++){
+		tmp[i] = str[i];
+	}
+	setEncrypt(tmp);
+	strcpy(head.dbKey,buffer);
+	setEncrypt((infoTemp));
+	strcpy(head.exInfo,buffer);
+	fileOut.write((char *)&head,sizeof(head));
+	cout<<"\n Set Database Manually ";
+	fileIn.close();
+	fileOut.close();
 	return 0;
 }
 
