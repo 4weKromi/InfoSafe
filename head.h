@@ -1,3 +1,4 @@
+/* https://github.com/4weKromi */
 #include <ios>
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,7 @@ protected:
 	char shash[64],filename[64];
 	unsigned int flagPass,flagDb;
 	char dbName[64],passValue[64];
-	char buffer[512],infoTemp[448];
+	char buffer[512],infoTemp[384];
 	unsigned int stage,lenFi;
 public:
 	ChooseSet(){};
@@ -50,4 +51,3 @@ public:
 	int enText(char entity[],char desc[]);
 	int deText(char entity[],char desc[]);
 };
-
