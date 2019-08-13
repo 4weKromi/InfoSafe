@@ -1,9 +1,21 @@
 
 #include "head.h"
 #include "hash/md5.h"
-#include <limits> 
 #include <cstdio> //strcmp
 #define SET "setApp.conf"
+#include <windows.h>
+
+void SetStdinEcho(bool enable = true)
+{
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    if( !enable )
+        mode &= ~ENABLE_ECHO_INPUT;
+    else
+        mode |= ENABLE_ECHO_INPUT;
+    SetConsoleMode(hStdin, mode );
+}
 
 struct data{
 char dbKey[64];
@@ -139,8 +151,10 @@ ChooseSet::verify(){
 	if(flagPass==1){
 		while(true){
 			cout<<"\n Enter pass : ";
-			/* issue#1  remove echo */
+			/* Remove echo */
+			SetStdinEcho(false);
 			cin>>pcompare;
+			SetStdinEcho(true);
 			str=md5(pcompare);
 			int n = str.length();
 			/*To compare string with array */
@@ -151,7 +165,7 @@ ChooseSet::verify(){
 			setEncrypt(arr);
 			strcpy(arr,buffer);
 			if(strcmp(passValue,arr)==0){
-				cout<<" Okay !!";
+				cout<<"\n Okay !!";
 				return 0;
 			}else
 				cout<<"\n Try Again ! ";
@@ -160,7 +174,9 @@ ChooseSet::verify(){
 		if (remove(SET)==0){
 			fileOut.open(SET);
 			cout<<"\n Enter new pass : ";
+			SetStdinEcho(false);
 			cin>>shash;
+			SetStdinEcho(true);
 			str=md5(shash);
 			int n = str.length();
 			char tmp[n+1];
@@ -172,7 +188,7 @@ ChooseSet::verify(){
 			/*pass not found, DB is reset*/
 			fileOut<<"<sel_file>"<<";\n";
 			fileOut.close();
-			cout<<" Pass hash : "<<str<<endl;
+			cout<<" Pass Hash : "<<str<<endl;
 		}else{
 			cout<<" Failed to change pass";
 		}	
@@ -193,7 +209,9 @@ ChooseSet::changeDb(){
 		fileIn.read((char *)&head,sizeof(head));
 		setDecrypt(head.dbKey);/* Decrypt to buffer*/
 		cout<<"\n Enter DB Key : ";
+		SetStdinEcho(false);
 		cin>>shash;
+		SetStdinEcho(true);
 		str=md5(shash);
 		int n = str.length();
 		char tmp[n+1];
@@ -247,8 +265,11 @@ ChooseSet::createDb(){
 	while(cin.peek()!='\n'){
 		cin>>infoTemp[i++];
 	}
+	/* cin.getline(infoTemp,480,'\n'); */
 	cout<<"\n Enter new pass [<64]: ";
+	SetStdinEcho(false);
 	cin>>shash;
+	SetStdinEcho(true);
 	str=md5(shash);
 	int n = str.length();
 	char tmp[n+1];
@@ -265,9 +286,3 @@ ChooseSet::createDb(){
 	fileOut.close();
 	return 0;
 }
-
-
-	
-	
-	
-	
