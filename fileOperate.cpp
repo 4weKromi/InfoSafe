@@ -1,3 +1,4 @@
+/* https://github.com/4weKromi */
 #include "head.h"
 #include <cstring> //strlen, strcpy
 #include <limits> //numeric_limits<streamsize>::max
@@ -32,7 +33,10 @@ FileOperate::writeFile(){
 		setDecrypt(dbName);
 		fileOut.open(buffer, ios::app);
 		fileOut.write((char *)&data,sizeof(data));
+		cout<<"\n\n Saved !\n";
 	}
+	else
+		cout<<"\n\n\t Db not set !\n Data Discarded ! \n";
 	fileOut.close();
 	return 0;
 }
@@ -72,7 +76,7 @@ FileOperate::loadFile(int open){
 						if(index<records)
 							break;
 						else
-							cout<<"\n Records 0 - "<<(records-1);
+							cout<<"\n Records 0 - "<<(records);
 					}
 					fileIn.seekg(index*sizeof(data));
 					fileIn.read((char *)&data,sizeof(data));
@@ -84,9 +88,9 @@ FileOperate::loadFile(int open){
 				fileIn.close();
 			}
 		}else
-			cout<<"\n Db file not found";
+			cout<<"\n\n Db file not found !";
 	}else
-		cout<<"\n Db not set";
+		cout<<"\n\n\tDb not set !\n";
 	return 0;
 }
 
@@ -130,13 +134,14 @@ FileOperate::fileSize(){
 			fileIn.close();
 		}
 	}
-	return index-1;
+	return index;
 }
 
 FileOperate::currentDb(){
-	struct data{
-	char dbKey[64];
-	char exInfo[448];
+	struct dbheader{
+		char notify[64];
+		char dbKey[64];
+		char exInfo[384];
 	}head;
 	ifstream fileIn;
 	checkFile();
@@ -153,14 +158,12 @@ FileOperate::currentDb(){
 		}
 		if(flagDb==2){
 			cout<<"\n DB Record : "<<fileSize()<<" Records";
-			cout<<"\n DB Size : "<<dbSize<<" Bytes";
+			cout<<"\n DB Size : "<<dbSize<<" Bytes\n";
 		}
 		else
-			cout<<"\n DB file not found";
+			cout<<"\n\n DB file not found !\n";
 	}
 	else
-		cout<<"\n Db not set";
+		cout<<"\n\n\t Db not set !\n";
 	return 0;
 }
-
-
