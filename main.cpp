@@ -1,3 +1,4 @@
+/* https://github.com/4weKromi */
 #include "head.h"
 
 class ProgramLoop: public Interface, public FileOperate{
@@ -14,7 +15,7 @@ class ProgramLoop: public Interface, public FileOperate{
 					writeFile();
 				}
 				else if(pick==2){
-					cout<<" 2 Selected";
+					cout<<"\n 2 Selected \n";
 				}
 				else if(pick==3){
 					loadFile(1);/* Decrypts Using Index*/		
@@ -35,11 +36,11 @@ class ProgramLoop: public Interface, public FileOperate{
 					changePass();/* Changes Key */
 				}
 				else if(pick==9){
-					reset();
+					reset();/* Reset apps and quit*/
 					break;
 				}
 				else if(pick==0){
-					cout<<" Bye "<<endl;
+					cout<<"\n\n Bye !!\n"<<endl;
 					break;/* Breaks Loop - Quits */
 				}
 			}
@@ -48,7 +49,6 @@ class ProgramLoop: public Interface, public FileOperate{
 };
 
 int main(int argc, char **argv){
-	cout<<" ";
 	ProgramLoop pl;
 	pl.flow();
 	return 0;
