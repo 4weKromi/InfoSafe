@@ -1,4 +1,4 @@
-
+/* https://github.com/4weKromi */
 #include "head.h"
 #include "hash/md5.h"
 #include <cstdio> //strcmp
@@ -17,9 +17,10 @@ void SetStdinEcho(bool enable = true)
     SetConsoleMode(hStdin, mode );
 }
 
-struct data{
+struct dbheader{
+char notify[64];
 char dbKey[64];
-char exInfo[448];
+char exInfo[384];
 }head;
 
 ChooseSet::setEncrypt(char setEn[]){
@@ -105,7 +106,7 @@ ChooseSet::checkFile(){
 		fileOut<<"<key>"<<";\n";
 		fileOut<<"<sel_file>"<<";\n";
 		fileOut.close();
-		cout<<"\n Creating a new setApp.conf file ";
+		cout<<"\n Creating a new "<<SET<<" file \n";
 	}
 	return 0;
 }
@@ -165,10 +166,10 @@ ChooseSet::verify(){
 			setEncrypt(arr);
 			strcpy(arr,buffer);
 			if(strcmp(passValue,arr)==0){
-				cout<<"\n Okay !!";
+				cout<<"\n\n Okay !!";
 				return 0;
 			}else
-				cout<<"\n Try Again ! ";
+				cout<<"\n\n Try Again ! \n";
 		}
 	}else{	/*if pass not set, or removed manually*/
 		if (remove(SET)==0){
@@ -188,9 +189,9 @@ ChooseSet::verify(){
 			/*pass not found, DB is reset*/
 			fileOut<<"<sel_file>"<<";\n";
 			fileOut.close();
-			cout<<" Pass Hash : "<<str<<endl;
+			cout<<"\n Pass Hash : "<<str<<endl;
 		}else{
-			cout<<" Failed to change pass";
+			cout<<"\n Failed to change pass\n";
 		}	
 	}
 	return 0;
@@ -201,7 +202,7 @@ ChooseSet::changeDb(){
 	ofstream fileOut;
 	string str;
 	stage=0;
-	cout<<"\n Enter new Database name (Syntax: filename.ext )[<64] : ";
+	cout<<"\n Enter Database name (Syntax: filename.ext )[<64] : ";
 	cin>>filename;
 	fileIn.open(filename);
 	if(fileIn){
@@ -235,7 +236,7 @@ ChooseSet::changeDb(){
 		}
 	}
 	else
-		cout<<"\n "<<filename<<" does not exist";
+		cout<<"\n "<<filename<<" does not exist ! \n Create a new Database \n";
 	return 0;
 }
 
@@ -259,14 +260,14 @@ ChooseSet::createDb(){
 	}
 	fileOut.open(filename);
 	cout<<"\n New Database file created : "<<filename;
-	cout<<"\n Enter "<<filename<<" info [<448] for readablity add '_' after each word\n : ";
+	cout<<"\n Enter "<<filename<<" info [<384] for readablity add '_' after each word\n : ";
 	i=0;
 	cin.ignore(1);
 	while(cin.peek()!='\n'){
 		cin>>infoTemp[i++];
 	}
 	/* cin.getline(infoTemp,480,'\n'); */
-	cout<<"\n Enter new pass [<64]: ";
+	cout<<"\n Enter new pass [<64] : ";
 	SetStdinEcho(false);
 	cin>>shash;
 	SetStdinEcho(true);
@@ -276,12 +277,15 @@ ChooseSet::createDb(){
 	for(i=0;i<sizeof(tmp);i++){
 		tmp[i] = str[i];
 	}
+	strcpy(shash," DB Header - Nothing To Display !");
+	setEncrypt(shash);
+	strcpy(head.notify,buffer);
 	setEncrypt(tmp);
 	strcpy(head.dbKey,buffer);
 	setEncrypt((infoTemp));
 	strcpy(head.exInfo,buffer);
 	fileOut.write((char *)&head,sizeof(head));
-	cout<<"\n Set Database Manually ";
+	cout<<"\n\n Set Database Manually ! \n";
 	fileIn.close();
 	fileOut.close();
 	return 0;
